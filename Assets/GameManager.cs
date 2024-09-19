@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     public SceneHandler SH;
     public PlayerManager PM;
 
+    public ShipManager SM;
+    public CameraManager CM;
+
     private void Awake()
     {
         acc = this;
@@ -23,6 +26,20 @@ public class GameManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        PM.PMove.Movement(IS.move.ReadValue<Vector2>());
+        switch (PM.playerMovementState)
+        {
+            case PlayerMovementState.OnGround:
+                PM.PMove.Movement(IS.move.ReadValue<Vector2>());
+                CM.FollowObj(PM.playerObj);
+                break;
+            case PlayerMovementState.InSpace:
+                PM.PMove.MovementSpace(IS.move.ReadValue<Vector2>());
+                CM.FollowObj(PM.playerObj);
+                break;
+            case PlayerMovementState.ConntrollingShip:
+                SM.SMove.ShipMove(IS.move.ReadValue<Vector2>());
+                CM.FollowObj(SM.shipObj);
+                break;
+        }
     }
 }
